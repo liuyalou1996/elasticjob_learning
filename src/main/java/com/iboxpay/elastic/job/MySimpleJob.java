@@ -1,4 +1,4 @@
-package com.iboxpay.job;
+package com.iboxpay.elastic.job;
 
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
@@ -16,10 +16,10 @@ public class MySimpleJob implements SimpleJob {
   public void execute(ShardingContext shardingContext) {
     switch (shardingContext.getShardingParameter()) {
       case "first":
-        System.err.println("分片项为0的机器处理前50条数据");
+        System.err.println("分片参数为first的机器处理前50条数据");
         break;
       case "second":
-        System.err.println("分片项为1的机器处理后50条数据");
+        System.err.println("分片参数为second的机器处理后50条数据");
         break;
     }
   }
@@ -33,7 +33,7 @@ public class MySimpleJob implements SimpleJob {
     SimpleJobConfiguration simpleJobConfig = new SimpleJobConfiguration(jobCoreConfig, MySimpleJob.class.getName());
     // Lite作业配置
     LiteJobConfiguration liteJobConfig = LiteJobConfiguration.newBuilder(simpleJobConfig).build();
-
+    // 注册中心配置
     CoordinatorRegistryCenter registryCenter =
         new ZookeeperRegistryCenter(new ZookeeperConfiguration("localhost:2181", "mySimpleJob"));
     registryCenter.init();
