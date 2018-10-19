@@ -15,18 +15,9 @@ import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperRegistryCenter;
 
 public class MyDataFlowJob implements DataflowJob<String> {
 
-  private static boolean flag = true;
-
-  private static boolean flag2 = true;
-
   @Override
   public List<String> fetchData(ShardingContext shardingContext) {
     List<String> data = new ArrayList<>();
-
-    if (!flag && !flag2) {
-      // 返回值为空或者为空集合时不会继续处理数据
-      return data;
-    }
 
     switch (shardingContext.getShardingItem()) {
       case 0:
@@ -50,21 +41,19 @@ public class MyDataFlowJob implements DataflowJob<String> {
     switch (shardingContext.getShardingItem()) {
       case 0:
         System.err.println("分片项为0的机器处理前50条数据->" + data);
-        flag = false;
         break;
       case 1:
         System.err.println("分片项为1的机器处理后50条数据->" + data);
-        flag2 = false;
         break;
     }
   }
 
   public static void main(String[] args) {
     // 作业核心配置
-    JobCoreConfiguration jobCoreConfig = JobCoreConfiguration.newBuilder("dataflowJob", "0/10 * * * * ?", 2).build();
-    // 数据流作业配置，开启流式处理，流式处理开启后，fetchData的返回值为空时或者集合长度为空时，不会调用processData方法继续进行处理，否则会持续抓取数据、处理数据
+    JobCoreConfiguration jobCoreConfig = JobCoreConfiguration.newBuilder("dataflowJob", "0/5 * * * * ?", 2).build();
+    // 数据流作业配置，不开启流式处理，如果流式处理开启，fetchData的返回值为空时或者集合长度为空时，不会调用processData方法继续进行处理，否则会持续抓取数据、处理数据
     DataflowJobConfiguration dataFlowJobConfig =
-        new DataflowJobConfiguration(jobCoreConfig, MyDataFlowJob.class.getName(), true);
+        new DataflowJobConfiguration(jobCoreConfig, MyDataFlowJob.class.getName(), false);
     // lite job配置
     LiteJobConfiguration liteJobConfig = LiteJobConfiguration.newBuilder(dataFlowJobConfig).build();
     // 注册中心配置

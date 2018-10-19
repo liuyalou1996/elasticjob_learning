@@ -1,6 +1,8 @@
 package com.iboxpay;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +15,10 @@ public class ApplicationTest {
 
   @Test
   public void contextLoads() throws SQLException {
+    List<String> list = new ArrayList<>();
+    list.add("lyl");
+    list.add("lq");
+    System.out.println(list);
   }
 
 }
